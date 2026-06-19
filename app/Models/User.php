@@ -9,7 +9,17 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
 class User extends Authenticatable
+{   
+    public function listings()
+    {
+        return $this->hasMany(\App\Models\Listing::class);
+    }
+
+public function rentals()
 {
+    return $this->hasMany(\App\Models\Rental::class);
+}
+
     /** @use HasFactory<UserFactory> */
     use HasFactory, Notifiable;
 
@@ -46,4 +56,6 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
+
+    
 }
