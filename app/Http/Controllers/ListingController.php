@@ -55,9 +55,7 @@ class ListingController extends Controller
 
     public function edit(Listing $listing)
     {
-        $user = Auth::user();
-
-        if (!$user || ($user->id !== $listing->user_id && $user->role !== 'admin')) {
+        if ($listing->user_id !== Auth::id()) {
             abort(403);
         }
 
@@ -68,9 +66,7 @@ class ListingController extends Controller
 
     public function update(Request $request, Listing $listing)
     {
-        $user = Auth::user();
-
-        if (!$user || ($user->id !== $listing->user_id && $user->role !== 'admin')) {
+        if ($listing->user_id !== Auth::id()) {
             abort(403);
         }
 
@@ -91,16 +87,14 @@ class ListingController extends Controller
 
     public function destroy(Listing $listing)
     {
-        $user = Auth::user();
-
-        if (!$user || ($user->id !== $listing->user_id && $user->role !== 'admin')) {
+        if ($listing->user_id !== Auth::id()) {
             abort(403);
         }
 
         $listing->delete();
 
         return redirect()
-            ->route('listings.index')
+            ->route('listings.my')
             ->with('success', 'Sludinājums veiksmīgi dzēsts.');
     }
 
@@ -108,9 +102,9 @@ class ListingController extends Controller
     {
         $query = Listing::with(['category', 'user']);
 
-       if ($request->filled("category_id")) {
-        $query->where("category_id", $request->input("category_id"));
-    }
+        if ($request->filled('category_id')) {
+            $query->where('category_id', $request->input('category_id'));
+        }
 
         if ($request->filled('type')) {
             $query->where('type', $request->input('type'));

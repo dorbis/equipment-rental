@@ -13,9 +13,9 @@ class AdminController extends Controller
             abort(403);
         }
 
-        $listings = Listing::with(['user', 'category'])
+        $listings = Listing::with(['category', 'user'])
             ->latest()
-            ->get();
+            ->paginate(10);
 
         return view('admin.index', compact('listings'));
     }
@@ -28,6 +28,8 @@ class AdminController extends Controller
 
         $listing->delete();
 
-        return back()->with('success', 'Sludinājums dzēsts.');
+        return redirect()
+            ->route('admin.index')
+            ->with('success', 'Sludinājums veiksmīgi dzēsts.');
     }
 }

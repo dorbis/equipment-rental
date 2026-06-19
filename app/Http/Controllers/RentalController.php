@@ -2,11 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Rental;
 use App\Models\Listing;
+use App\Models\Rental;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Carbon\Carbon;
 
 class RentalController extends Controller
 {
@@ -20,27 +19,24 @@ class RentalController extends Controller
         return view('rentals.index', compact('rentals'));
     }
 
-    public function store(Request $request)
+    public function store(Request $request, Listing $listing)
     {
+        if ($listing->user_id === Auth::id()) {
+            return redirect()
+                ->route('listings.show', $listing)
+                ->with('success', 'Jūs nevarat rezervēt savu sludinājumu.');
+        }
+
         $validated = $request->validate([
-            'listing_id' => 'required|exists:listings,id',
-            'start_date' => 'required|date|after_or_equal:today',
+            'start_date' => 'required|date',
             'end_date' => 'required|date|after_or_equal:start_date',
             'note' => 'nullable|string|max:1000',
         ]);
 
-        $listing = Listing::findOrFail($validated['listing_id']);
+        $start = new \DateTime($validated['start_date']);
+        $end = new \DateTime($validated['end_date']);
+        $days = $start->diff($end)->days + 1;
 
-        if ($listing->user_id === Auth::id()) {
-            return back()->withErrors([
-                'listing_id' => 'Jūs nevarat rezervēt savu sludinājumu.'
-            ]);
-        }
-
-        $startDate = Carbon::parse($validated['start_date']);
-        $endDate = Carbon::parse($validated['end_date']);
-
-        $days = $startDate->diffInDays($endDate) + 1;
         $totalPrice = $days * $listing->price_per_day;
 
         Rental::create([

@@ -2,41 +2,150 @@
 <html lang="lv">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>@yield('title', 'Aprīkojuma noma')</title>
 
     <style>
         body {
+            margin: 0;
             font-family: Arial, sans-serif;
             background: #f4f4f4;
-            margin: 0;
             color: #222;
         }
 
-        nav {
+        .navbar {
             background: #222;
-            color: white;
-            padding: 15px 30px;
+            padding: 14px 30px;
             display: flex;
-            justify-content: space-between;
             align-items: center;
+            gap: 18px;
         }
 
-        nav a {
+        .navbar a {
             color: white;
             text-decoration: none;
-            margin-right: 15px;
+            font-weight: bold;
         }
 
-        nav a:hover {
+        .navbar a:hover {
             text-decoration: underline;
         }
 
+        .navbar .right {
+            margin-left: auto;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .navbar span {
+            color: #ddd;
+        }
+
+        .navbar button {
+            background: #dc3545;
+            color: white;
+            border: none;
+            padding: 7px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .navbar button:hover {
+            background: #b02a37;
+        }
+
         .container {
-            max-width: 1000px;
+            max-width: 1100px;
             margin: 30px auto;
             background: white;
             padding: 25px;
             border-radius: 8px;
+            box-shadow: 0 0 8px rgba(0, 0, 0, 0.08);
+        }
+
+        h1, h2, h3 {
+            margin-top: 0;
+        }
+
+        .alert-success {
+            background: #d1e7dd;
+            color: #0f5132;
+            padding: 12px;
+            border-radius: 5px;
+            margin-bottom: 15px;
+            border: 1px solid #badbcc;
+        }
+
+        .alert-error {
+            background: #f8d7da;
+            color: #842029;
+            padding: 12px;
+            border-radius: 5px;
+            margin-bottom: 15px;
+            border: 1px solid #f5c2c7;
+        }
+
+        .btn {
+            display: inline-block;
+            background: #0d6efd;
+            color: white;
+            padding: 8px 13px;
+            border-radius: 4px;
+            text-decoration: none;
+            border: none;
+            cursor: pointer;
+        }
+
+        .btn:hover {
+            background: #0b5ed7;
+        }
+
+        .btn-danger {
+            background: #dc3545;
+        }
+
+        .btn-danger:hover {
+            background: #bb2d3b;
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+        }
+
+        .btn-secondary:hover {
+            background: #5c636a;
+        }
+
+        input, textarea, select {
+            width: 100%;
+            padding: 9px;
+            margin-top: 5px;
+            margin-bottom: 12px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        label {
+            font-weight: bold;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+
+        table th,
+        table td {
+            border: 1px solid #ddd;
+            padding: 10px;
+        }
+
+        table th {
+            background: #f1f1f1;
+            text-align: left;
         }
 
         .card {
@@ -47,89 +156,85 @@
             background: #fafafa;
         }
 
-        input, textarea, select {
-            width: 100%;
-            padding: 8px;
-            margin-top: 5px;
-            margin-bottom: 15px;
-            box-sizing: border-box;
+        .footer {
+            text-align: center;
+            color: #777;
+            margin: 30px 0;
+            font-size: 14px;
         }
 
-        button, .btn {
-            background: #2563eb;
-            color: white;
-            padding: 8px 14px;
-            border: none;
-            border-radius: 4px;
-            text-decoration: none;
-            cursor: pointer;
-            display: inline-block;
-        }
+        @media (max-width: 700px) {
+            .navbar {
+                flex-direction: column;
+                align-items: flex-start;
+            }
 
-        .btn-danger {
-            background: #dc2626;
-        }
+            .navbar .right {
+                margin-left: 0;
+                flex-direction: column;
+                align-items: flex-start;
+            }
 
-        .btn-secondary {
-            background: #555;
-        }
-
-        .success {
-            color: green;
-            margin-bottom: 15px;
-        }
-
-        .error {
-            color: red;
-            margin-bottom: 15px;
-        }
-
-        .actions {
-            margin-top: 10px;
-        }
-
-        .actions form {
-            display: inline;
+            .container {
+                margin: 15px;
+                padding: 18px;
+            }
         }
     </style>
 </head>
 <body>
 
-<nav>
-    <div>
-        <a href="{{ route('listings.index') }}">Sludinājumi</a>
+    <nav class="navbar">
+        <a href="{{ route('listings.index') }}">Sākums</a>
 
         @auth
-            <a href="{{ route('listings.create') }}">Publicēt sludinājumu</a>
+            <a href="{{ route('listings.create') }}">Pievienot sludinājumu</a>
             <a href="{{ route('listings.my') }}">Mani sludinājumi</a>
             <a href="{{ route('rentals.index') }}">Manas rezervācijas</a>
-
-            @if(auth()->user()->role === 'admin')
-                <a href="{{ route('admin.index') }}">Admin panelis</a>
+            
+            @if (Auth::user()->role === 'admin')
+                <a href="{{ route('admin.index') }}">Administrācija</a>
             @endif
+        
+            <div class="right">
+                <span>{{ Auth::user()->name }}</span>
+
+                <form method="POST" action="{{ route('logout') }}">
+                    @csrf
+                    <button type="submit">Iziet</button>
+                </form>
+            </div>
+        @else
+            <div class="right">
+                <a href="{{ route('login') }}">Pieslēgties</a>
+                <a href="{{ route('register') }}">Reģistrēties</a>
+            </div>
         @endauth
+    </nav>
+
+    <main class="container">
+        @if (session('success'))
+            <div class="alert-success">
+                {{ session('success') }}
+            </div>
+        @endif
+
+        @if ($errors->any())
+            <div class="alert-error">
+                <ul>
+                    @foreach ($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
+            </div>
+        @endif
+
+        @yield('content')
+    </main>
+
+    <div class="footer">
+        Aprīkojuma nomas sistēma &copy; {{ date('Y') }}
     </div>
-
-    <div>
-        @auth
-            <span>{{ auth()->user()->name }}</span>
-
-            <form method="POST" action="{{ route('logout') }}" style="display:inline;">
-                @csrf
-                <button type="submit" class="btn btn-secondary">Iziet</button>
-            </form>
-        @endauth
-
-        @guest
-            <a href="{{ route('login') }}">Pieslēgties</a>
-            <a href="{{ route('register') }}">Reģistrēties</a>
-        @endguest
-    </div>
-</nav>
-
-<div class="container">
-    @yield('content')
-</div>
 
 </body>
 </html>
