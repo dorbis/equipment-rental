@@ -156,12 +156,6 @@
             background: #fafafa;
         }
 
-        .footer {
-            text-align: center;
-            color: #777;
-            margin: 30px 0;
-            font-size: 14px;
-        }
 
         @media (max-width: 700px) {
             .navbar {
@@ -232,9 +226,6 @@
         @yield('content')
     </main>
 
-    <div class="footer">
-        Aprīkojuma nomas sistēma &copy; {{ date('Y') }}
-    </div>
 
 </body>
 </html>
